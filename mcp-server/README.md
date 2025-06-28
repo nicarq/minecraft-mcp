@@ -58,6 +58,10 @@ Options:
   --help            Display help
 ```
 
+### Environment Variables
+
+- `MCP_SKILL_TIMEOUT_MS` - Timeout in milliseconds for skill execution (default `30000`).
+
 ### Integration with Claude Desktop or JSON configurations Locally
 
 Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
