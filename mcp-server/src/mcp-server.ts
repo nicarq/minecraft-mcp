@@ -45,6 +45,9 @@ import { loadSkills, SkillRegistry } from './skillRegistry.js';
 import { BotManager } from './botManager.js';
 import { initializeChatHistory } from './skills/verified/readChat.js';
 
+// Skill execution timeout in milliseconds (default 30 seconds)
+const SKILL_TIMEOUT_MS = parseInt(process.env.MCP_SKILL_TIMEOUT_MS || '30000', 10) || 30000;
+
 // Parse command line arguments (now optional)
 program
     .option('-p, --port <port>', 'Default Minecraft server port')
@@ -300,11 +303,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
                 throw new Error("No active bot. Please use 'joinGame' first to spawn a bot.");
             }
 
-            // Execute the skill with 30-second timeout
+            // Execute the skill with configurable timeout
             const result = await Promise.race([
                 skill.execute(bot, args),
                 new Promise<never>((_, reject) =>
-                    setTimeout(() => reject(new Error('Skill execution timed out after 30 seconds')), 30000)
+                    setTimeout(
+                        () => reject(new Error(`Skill execution timed out after ${Math.round(SKILL_TIMEOUT_MS / 1000)} seconds`)),
+                        SKILL_TIMEOUT_MS
+                    )
                 )
             ]);
 
